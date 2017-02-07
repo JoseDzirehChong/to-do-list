@@ -53,6 +53,8 @@ def drawCheckbox():
     checkbox1.pack(side=tkinter.LEFT)
     deleteItem = tkinter.Button(checkboxRow, text = "x", command=destroyCheckbox, bg="red", fg="white", activebackground="white", activeforeground="red")
     deleteItem.pack(side=tkinter.RIGHT)
+    with open("toDoListSaveFile.json", 'w') as outfile:
+        json.dump(checkboxList, outfile)
    
 def createInputStuff():
     paddingFrame = tkinter.Frame(inputStuff, height=5)
@@ -90,6 +92,3 @@ buttonConfirm = tkinter.Button(bottomInput, text="Confirm", command=drawCheckbox
 buttonConfirm.pack(side=tkinter.LEFT)
 
 master.mainloop()
-
-with open("toDoListSaveFile.json", 'w') as outfile:
-    json.dump(checkboxList, outfile)
