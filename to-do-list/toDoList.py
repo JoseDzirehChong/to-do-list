@@ -29,6 +29,9 @@ with open('toDoListSaveFile.json') as infile:
 def destroyCheckbox(checkbox, row):
     row.destroy()
     del checkboxList [checkboxList.index(str(checkbox))]
+        
+    with open("toDoListSaveFile.json", 'w') as outfile:
+        json.dump(checkboxList, outfile)
 
 for savedCheckbox in checkboxList:
     checkboxRow = tkinter.Frame(checkboxArea)
@@ -39,20 +42,29 @@ for savedCheckbox in checkboxList:
                                 activebackground="white", activeforeground="red",
                                 command=lambda c=savedCheckbox, r=checkboxRow: destroyCheckbox(c, r))
     deleteItem.pack(side=tkinter.RIGHT)
+    
+    with open("toDoListSaveFile.json", 'w') as outfile:
+        json.dump(checkboxList, outfile)
 
 def drawCheckbox():
     newCheckboxInput = entry.get()
     def destroyCheckbox():
         checkboxRow.destroy()
         del checkboxList[checkboxList.index(newCheckboxInput)]
+        with open("toDoListSaveFile.json", 'w') as outfile:
+            json.dump(checkboxList, outfile)                 
     checkboxList.append(newCheckboxInput)
     entry.delete(0,tkinter.END)
     checkboxRow = tkinter.Frame(checkboxArea)
     checkboxRow.pack(fill=tkinter.X)
     checkbox1 = tkinter.Checkbutton(checkboxRow, text = checkboxList[-1])
     checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text = "x", command=destroyCheckbox, bg="red", fg="white", activebackground="white", activeforeground="red")
+    deleteItem = tkinter.Button(checkboxRow, text = "x", command=lambda c=savedCheckbox, r=checkboxRow: destroyCheckbox(c, r), bg="red", fg="white", activebackground="white", activeforeground="red")
     deleteItem.pack(side=tkinter.RIGHT)
+    
+    with open("toDoListSaveFile.json", 'w') as outfile:
+        json.dump(checkboxList, outfile)
+    
    
 def createInputStuff():
     paddingFrame = tkinter.Frame(inputStuff, height=5)
@@ -62,17 +74,11 @@ def createInputStuff():
     buttonAdd.pack_forget()
     master.bind('<Return>', lambda event: drawCheckbox())
 
-    with open("toDoListSaveFile.json", 'w') as outfile:
-        json.dump(checkboxList, outfile)
-        
 def removeInputStuff():
     inputStuff.pack_forget()
     buttonAdd.pack()
     buttonDone.pack_forget()
     master.unbind('<Return>')
-    
-    with open("toDoListSaveFile.json", 'w') as outfile:
-        json.dump(checkboxList, outfile)
     
 
 buttonDone = tkinter.Button(inputStuff, text = "Close Input", command=removeInputStuff)
