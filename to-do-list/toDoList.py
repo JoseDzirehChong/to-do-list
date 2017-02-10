@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Jan 22 14:47:36 2017
-
 @author: Jose Chong
 """
 import json
@@ -59,7 +58,7 @@ def drawCheckbox():
     checkboxRow.pack(fill=tkinter.X)
     checkbox1 = tkinter.Checkbutton(checkboxRow, text = checkboxList[-1])
     checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text = "x", command=lambda c=savedCheckbox, r=checkboxRow: destroyCheckbox(c, r), bg="red", fg="white", activebackground="white", activeforeground="red")
+    deleteItem = tkinter.Button(checkboxRow, text = "x", command=destroyCheckbox, bg="red", fg="white", activebackground="white", activeforeground="red")
     deleteItem.pack(side=tkinter.RIGHT)
     
     with open("toDoListSaveFile.json", 'w') as outfile:
