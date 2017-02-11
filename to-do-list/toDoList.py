@@ -1,103 +1,109 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Jan 22 14:47:36 2017
-@author: Jose Chong
-"""
+
 import json
-import tkinter
+try:
+    import tkinter as tk
+except ImportError:
+    import Tkinter as tk
 
-master = tkinter.Tk()
-master.title("To-Do List (with saving!)")
-master.geometry("300x300")
+class CheckboxRow(tk.Frame):
+    def __init__(self, master, name, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        self.name = name
 
-masterFrame = tkinter.Frame(master)
+        checkbox = tk.Checkbutton(self, text=name)
+        checkbox.pack(side=tk.LEFT)
 
-masterFrame.pack(fill=tkinter.X)
-
-checkboxArea = tkinter.Frame(masterFrame, height=26)
-
-checkboxArea.pack(fill=tkinter.X)
-
-inputStuff = tkinter.Frame(masterFrame)
-
-checkboxList = []
-
-with open('toDoListSaveFile.json') as infile:    
-    checkboxList = json.load(infile)
-    
-def destroyCheckbox(checkbox, row):
-    row.destroy()
-    del checkboxList [checkboxList.index(str(checkbox))]
-        
-    with open("toDoListSaveFile.json", 'w') as outfile:
-        json.dump(checkboxList, outfile)
-
-for savedCheckbox in checkboxList:
-    checkboxRow = tkinter.Frame(checkboxArea)
-    checkboxRow.pack(fill=tkinter.X)
-    checkbox1 = tkinter.Checkbutton(checkboxRow, text=savedCheckbox)
-    checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text="x", bg="red", fg="white",
+        deleteItem = tk.Button(self, text="x", bg="red", fg="white",
                                 activebackground="white", activeforeground="red",
-                                command=lambda c=savedCheckbox, r=checkboxRow: destroyCheckbox(c, r))
-    deleteItem.pack(side=tkinter.RIGHT)
-    
-    with open("toDoListSaveFile.json", 'w') as outfile:
-        json.dump(checkboxList, outfile)
+                                command=self.destroyCheckbox)
+        deleteItem.pack(side=tk.RIGHT)
 
-def drawCheckbox():
-    newCheckboxInput = entry.get()
-    def destroyCheckbox():
-        checkboxRow.destroy()
-        del checkboxList[checkboxList.index(newCheckboxInput)]
+    def destroyCheckbox(self):
+        self.master.master.checkboxList.remove(self.name)
+        self.destroy()
+
+class CheckboxArea(tk.Frame):
+    def add(self, name):
+        row = CheckboxRow(self, name)
+        row.pack(fill=tk.X)
+
+class InputStuff(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+
+        prompt = tk.Label(self, text="What do you want your checkbox to be for?")
+        prompt.pack()
+
+        bottomInput = tk.Frame(self)
+        self.entry = tk.Entry(bottomInput, bd=3)
+        self.entry.pack(side=tk.LEFT)
+        buttonConfirm = tk.Button(bottomInput, text="Confirm", command=self.drawCheckbox)
+        buttonConfirm.pack(side=tk.LEFT)
+        bottomInput.pack()
+
+        buttonDone = tk.Button(self, text = "Close Input", command=master.hide_input_stuff)
+        buttonDone.pack()
+
+    def drawCheckbox(self, event=None):
+        self.master.add(self.entry.get())
+        self.entry.delete(0, tk.END)
+
+class MainWindow(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        master.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        self.checkboxList = []
+
+        self.checkbox_area = CheckboxArea(self)
+        self.checkbox_area.pack(fill=tk.X)
+
+        self.input_stuff = InputStuff(self)
+        self.add_button = tk.Button(self, text="Add Item", command=self.show_input_stuff)
+
+        self.hide_input_stuff() # start with "add" button active
+
+        self.load()
+
+    def add(self, name):
+        self.checkbox_area.add(name)
+        self.checkboxList.append(name)
+
+    def show_input_stuff(self):
+        self.add_button.pack_forget()
+        self.input_stuff.pack()
+        self.input_stuff.entry.focus()
+        self.master.bind('<Return>', self.input_stuff.drawCheckbox)
+
+    def hide_input_stuff(self):
+        self.input_stuff.pack_forget()
+        self.add_button.pack()
+        self.master.unbind('<Return>')
+
+    def load(self):
+        try:
+            with open('toDoListSaveFile.json') as infile:
+                checkboxList = json.load(infile)
+            for savedCheckbox in checkboxList:
+                self.add(savedCheckbox)
+        except (IOError, ValueError):
+            #an error occured while loading ... so no saved settings loaded
+            pass
+
+    def on_closing(self):
         with open("toDoListSaveFile.json", 'w') as outfile:
-            json.dump(checkboxList, outfile)                 
-    checkboxList.append(newCheckboxInput)
-    entry.delete(0,tkinter.END)
-    checkboxRow = tkinter.Frame(checkboxArea)
-    checkboxRow.pack(fill=tkinter.X)
-    checkbox1 = tkinter.Checkbutton(checkboxRow, text = checkboxList[-1])
-    checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text = "x", command=destroyCheckbox, bg="red", fg="white", activebackground="white", activeforeground="red")
-    deleteItem.pack(side=tkinter.RIGHT)
-    
-    with open("toDoListSaveFile.json", 'w') as outfile:
-        json.dump(checkboxList, outfile)
-    
-   
-def createInputStuff():
-    paddingFrame = tkinter.Frame(inputStuff, height=5)
-    paddingFrame.pack(fill=tkinter.X)
-    buttonDone.pack()
-    inputStuff.pack()
-    buttonAdd.pack_forget()
-    master.bind('<Return>', lambda event: drawCheckbox())
+            json.dump(self.checkboxList, outfile)
+        self.quit()
 
-def removeInputStuff():
-    inputStuff.pack_forget()
-    buttonAdd.pack()
-    buttonDone.pack_forget()
-    master.unbind('<Return>')
-    
+def main():
+    master = tk.Tk()
+    master.title("To-Do List (with saving!)")
+    master.geometry("300x300")
+    win = MainWindow(master)
+    win.pack(fill=tk.X)
+    master.mainloop()
 
-buttonDone = tkinter.Button(inputStuff, text = "Close Input", command=removeInputStuff)
-    
-
-buttonAdd = tkinter.Button(masterFrame, text="Add Item", command=createInputStuff)
-buttonAdd.pack()
-
-
-topInput = tkinter.Frame(inputStuff)
-bottomInput = tkinter.Frame(inputStuff)
-
-topInput.pack()
-bottomInput.pack()
-
-prompt = tkinter.Label(topInput, text="What do you want your checkbox to be for?")
-prompt.pack()
-entry = tkinter.Entry(bottomInput, bd=3)
-entry.pack(side=tkinter.LEFT)
-buttonConfirm = tkinter.Button(bottomInput, text="Confirm", command=drawCheckbox)
-buttonConfirm.pack(side=tkinter.LEFT)
-        
-master.mainloop()
+if __name__ == '__main__':
+    main()
