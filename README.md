@@ -8,7 +8,9 @@ Please note that renaming the save file or the folders it is in will break the p
 
 Different folders:
 
-to-do-list-prototype:
+to-do-list:
+
+THIS IS A PROTOTYPE AND NO LONGER UPDATED
 
 Contains a script and a json file. Download them both and put them in the same folder for the program to work. Please note that this is outdated and a 'prototype' of the full program, and is not being updated. Please head to to-do-list-to-compile to see code that is being updated and fixed.
 
