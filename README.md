@@ -6,12 +6,8 @@ A to-do list. Saves between runs of the program through writing list items to a 
 
 Please note that renaming the save file or the folders it is in will break the program.
 
-Guide to the different folders:
-
-to-do-list-ignore:
-
-Ignore this.
-
 to-do-list-to-compile:
 
-Contains a script. This script is to be compiled into an executable, as seen in Releases. If you just want a to-do list and you're not interested in the programming, download the exe, the script is its code and will not be of use to you if you do not have programming software. The toDoList.py here is slightly different to the one in to-do-list. You may have noticed that there is no toDoListSaveFile.json included in this. The program automatically makes the .json file for you in your Documents folder, under joseDzirehChongToDoList, which I think is pretty nifty. 
+Contains a script. This script is to be compiled into an executable, as seen in Releases. If you just want a to-do list and you're not interested in the programming, download the exe, the script is its code and will not be of use to you if you do not have programming software.
+
+The toDoList.py here is slightly different to the one in to-do-list. You may have noticed that there is no toDoListSaveFile.json included in this. The program automatically makes the .json file for you in your Documents folder, under joseDzirehChongToDoList, which I think is pretty nifty. 
