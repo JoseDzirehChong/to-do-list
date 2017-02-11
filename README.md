@@ -6,13 +6,11 @@ A to-do list. Saves between runs of the program through writing list items to a 
 
 Please note that renaming the save file or the folders it is in will break the program.
 
-Different folders:
+Guide to the different folders:
 
-to-do-list:
+to-do-list-ignore:
 
-THIS IS A PROTOTYPE AND NO LONGER UPDATED
-
-Contains a script and a json file. Download them both and put them in the same folder for the program to work. Please note that this is outdated and a 'prototype' of the full program, and is not being updated. Please head to to-do-list-to-compile to see code that is being updated and fixed.
+Ignore this.
 
 to-do-list-to-compile:
 
