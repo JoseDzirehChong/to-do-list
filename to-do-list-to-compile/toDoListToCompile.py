@@ -83,18 +83,22 @@ class CheckboxRow(tk.Frame):
                                 activebackground="white", activeforeground="red",
                                 command=self.destroyCheckbox)
         deleteItem.pack(side=tk.RIGHT)
-        self.master.master.checkboxList.append([self.name, var.get()])
+        newItem = [self.text, var.get()]
+        self.master.master.checkboxList.append(newItem)
         loadToJSON()
         
-    def destroyCheckbox(self):
-        self.master.master.checkboxList.remove(self.name)
+    def destroyCheckbox(self, text):
+        self.text = text
+        newItem = [self.text, var.get()]
+        self.master.master.checkboxList.remove(newItem)
         self.destroy()
         loadToJSON()
         
-def destroyCheckbox(checkbox, row):
-    row.destroy()
-    del checkboxList[-1]
-    loadToJSON()
+
+class CheckboxArea(tk.Frame):
+    def add(self, name):
+        row = CheckboxRow(self, name)
+        row.pack(fill=tk.X)
 
 for savedCheckbox in checkboxList:
     checkboxRow = tk.Frame(checkboxArea)
