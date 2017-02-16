@@ -96,10 +96,9 @@ class MainWindow(tk.Frame):
                     open(self.filepath).close()
                     
         def checkIfSaveFileIsEmpty():
-            global checkboxList
             if os.path.getsize(self.filepath) == 0:
                 with open (self.filepath, 'w') as outfile:
-                    json.dump(checkboxList, outfile)
+                    json.dump(self.checkboxList, outfile)
                         
 
             with open(self.filepath) as infile:    
