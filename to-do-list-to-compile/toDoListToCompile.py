@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Created on Sun Jan 22 14:47:36 2017
+@author: Jose Chong
+"""
+
 import json
 
 try:
@@ -46,7 +51,7 @@ class InputStuff(tk.Frame):
         buttonConfirm.pack(side=tk.LEFT)
         bottomInput.pack()
 
-        buttonDone = tk.Button(self, text = "Close Input", command=master.hide_input_stuff)
+        buttonDone = tk.Button(self, text = "Close Input", command=master.hideInputStuff)
         buttonDone.pack()
 
     def drawCheckbox(self, event=None):
@@ -60,30 +65,45 @@ class MainWindow(tk.Frame):
         self.filepath = os.path.expanduser(r'~\Documents\joseDzirehChongToDoList\toDoListSaveFile.json')
 
         self.checkboxList = []
+        
+        try:
+            with open(self.filepath) as infile:    
+                self.checkboxList = json.load(infile)
+        except (ValueError, IOError):
+            pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
 
-        self.checkbox_area = CheckboxArea(self)
-        self.checkbox_area.pack(fill=tk.X)
+Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
 
-        self.input_stuff = InputStuff(self)
-        self.add_button = tk.Button(self, text="Add Item", command=self.show_input_stuff)
+        self.checkboxArea = CheckboxArea(self)
+        self.checkboxArea.pack(fill=tk.X)
 
-        self.hide_input_stuff() # start with "add" button active
+        self.inputStuff = InputStuff(self)
+        self.addButton = tk.Button(self, text="Add Item", command=self.showInputStuff)
+
+        self.hideInputStuff() # start with "add" button active
 
         self.load()
+        
+    def loadToJSON(self):
+        with open (self.filepath, 'w') as outfile:
+            json.dump(self.checkboxList, outfile)
+            
+        print(self.checkboxList)
 
     def add(self, name):
-        self.checkbox_area.add(name)
+        self.checkboxArea.add(name)
         self.checkboxList.append(name)
+        self.loadToJSON()
 
-    def show_input_stuff(self):
-        self.add_button.pack_forget()
-        self.input_stuff.pack()
-        self.input_stuff.entry.focus()
-        self.master.bind('<Return>', self.input_stuff.drawCheckbox)
+    def showInputStuff(self):
+        self.addButton.pack_forget()
+        self.inputStuff.pack()
+        self.inputStuff.entry.focus()
+        self.master.bind('<Return>', self.inputStuff.drawCheckbox)
 
-    def hide_input_stuff(self):
-        self.input_stuff.pack_forget()
-        self.add_button.pack()
+    def hideInputStuff(self):
+        self.inputStuff.pack_forget()
+        self.addButton.pack()
         self.master.unbind('<Return>')
 
     def load(self):
@@ -97,26 +117,15 @@ class MainWindow(tk.Frame):
                     
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:
-                with open (self.filepath, 'w') as outfile:
-                    json.dump(self.checkboxList, outfile)
-                        
-
-            with open(self.filepath) as infile:    
-                 self.checkboxList = json.load(infile)
-
+                self.loadToJSON()
     
-        def lastStand(filepath):
-            try:
-                open(self.filepath, 'w')
-                open(self.filepath).close()
-            except (IOError, ValueError):
-                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file so I can tell what went wrong.
+        def displaySavedCheckboxes():
+            for savedCheckbox in self.checkboxList:
+                    self.add(savedCheckbox)
 
-Click the button below to exit, the red button in the corner doesn't work.""", 'Broken Save File')
-       
         checkExistenceOfSaveFile()
         checkIfSaveFileIsEmpty()
-        lastStand()
+        displaySavedCheckboxes()
 
 def main():
     master = tk.Tk()
