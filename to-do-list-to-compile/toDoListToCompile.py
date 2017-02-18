@@ -65,14 +65,6 @@ class MainWindow(tk.Frame):
         self.filepath = os.path.expanduser(r'~\Documents\joseDzirehChongToDoList\toDoListSaveFile.json')
 
         self.checkboxList = []
-        
-        try:
-            with open(self.filepath) as infile:    
-                self.checkboxList = json.load(infile)
-        except (ValueError, IOError):
-            pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
-
-Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
 
         self.checkboxArea = CheckboxArea(self)
         self.checkboxArea.pack(fill=tk.X)
@@ -118,15 +110,24 @@ Click the button below to exit, the red X button in the corner doesn't work.""",
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:
                 self.loadToJSON()
-    
-        def displaySavedCheckboxes():
-            for savedCheckbox in self.checkboxList:
+                
+        def lastStand():
+            try:
+                with open(self.filepath) as infile:    
+                    checkboxList = json.load(infile)
+                for savedCheckbox in checkboxList:
                     self.add(savedCheckbox)
+            except (ValueError, IOError):
+                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
+
+Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
+
+            
 
         checkExistenceOfSaveFile()
         checkIfSaveFileIsEmpty()
-        displaySavedCheckboxes()
-
+        lastStand()
+        
 def main():
     master = tk.Tk()
     master.title("To-Do List (with saving!)")
