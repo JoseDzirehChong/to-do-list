@@ -1,122 +1,146 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
 Created on Sun Jan 22 14:47:36 2017
-
 @author: Jose Chong
 """
+
+#<IMPORTS>
+
 import json
-import tkinter
+
+try:
+    import tkinter as tk
+except ImportError:
+    import Tkinter as tk
 import os
+import pymsgbox
 
-filepath = os.path.expanduser(r'~\Documents\joseDzirehChongToDoList\toDoListSaveFile.json')
+#</IMPORTS>
 
-def checkExistenceOfSaveFile():
-    if not os.path.isdir(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList')):
-        os.makedirs(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList'), 777)
-    
-    if not os.path.isfile(filepath):
-        open(filepath, 'w')
-        open(filepath).close()
-        
-checkExistenceOfSaveFile()
+class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
+    def __init__(self, master, name, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        self.name = name
 
-master = tkinter.Tk()
-master.title("To-Do List")
-master.geometry("300x300")
+        checkbox = tk.Checkbutton(self, text=name)
+        checkbox.pack(side=tk.LEFT)
 
-masterFrame = tkinter.Frame(master)
-
-masterFrame.pack(fill=tkinter.X)
-
-checkboxArea = tkinter.Frame(masterFrame, height=26)
-
-checkboxArea.pack(fill=tkinter.X)
-
-inputStuff = tkinter.Frame(masterFrame)
-
-checkboxList = []
-
-if os.path.getsize(filepath) == 0:
-    with open (filepath, 'w') as outfile:
-        json.dump(checkboxList, outfile)
-    
-
-with open(filepath) as infile:    
-    checkboxList = json.load(infile)
-
-def destroyCheckbox(checkbox, row):
-    row.destroy()
-    del checkboxList [checkboxList.index(str(checkbox))]
-
-    with open(filepath, 'w') as outfile:
-        json.dump(checkboxList, outfile)
-
-for savedCheckbox in checkboxList:
-    checkboxRow = tkinter.Frame(checkboxArea)
-    checkboxRow.pack(fill=tkinter.X)
-    checkbox1 = tkinter.Checkbutton(checkboxRow, text=savedCheckbox)
-    checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text="x", bg="red", fg="white",
+        deleteItem = tk.Button(self, text="x", bg="red", fg="white",
                                 activebackground="white", activeforeground="red",
-                                command=lambda c=savedCheckbox, r=checkboxRow: destroyCheckbox(c, r))
-    deleteItem.pack(side=tkinter.RIGHT)
+                                command=self.destroyCheckbox)
+        deleteItem.pack(side=tk.RIGHT)
 
-    with open(filepath, 'w') as outfile:
-        json.dump(checkboxList, outfile)
+    def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
+        self.master.master.checkboxList.remove(self.name)
+        self.destroy()
+        self.master.master.loadToJSON()
 
-def drawCheckbox():
-    newCheckboxInput = entry.get()
-    def destroyCheckbox():
-        checkboxRow.destroy()
-        del checkboxList[checkboxList.index(newCheckboxInput)]
-        with open(filepath, 'w') as outfile:
-            json.dump(checkboxList, outfile)                 
-    checkboxList.append(newCheckboxInput)
-    entry.delete(0,tkinter.END)
-    checkboxRow = tkinter.Frame(checkboxArea)
-    checkboxRow.pack(fill=tkinter.X)
-    checkbox1 = tkinter.Checkbutton(checkboxRow, text = checkboxList[-1])
-    checkbox1.pack(side=tkinter.LEFT)
-    deleteItem = tkinter.Button(checkboxRow, text = "x", command=lambda c=checkbox1, r=checkboxRow: destroyCheckbox(), bg="red", fg="white", activebackground="white", activeforeground="red")
-    deleteItem.pack(side=tkinter.RIGHT)
+class CheckboxArea(tk.Frame):
+    def add(self, name):
+        row = CheckboxRow(self, name)
+        row.pack(fill=tk.X)
 
-    with open(filepath, 'w') as outfile:
-        json.dump(checkboxList, outfile)
+class InputStuff(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
 
+        prompt = tk.Label(self, text="What do you want your checkbox to be for?")
+        prompt.pack()
 
-def createInputStuff():
-    paddingFrame = tkinter.Frame(inputStuff, height=5)
-    paddingFrame.pack(fill=tkinter.X)
-    buttonDone.pack()
-    inputStuff.pack()
-    buttonAdd.pack_forget()
-    master.bind('<Return>', lambda event: drawCheckbox())
+        bottomInput = tk.Frame(self)
+        self.entry = tk.Entry(bottomInput, bd=3)
+        self.entry.pack(side=tk.LEFT)
+        buttonConfirm = tk.Button(bottomInput, text="Confirm", command=self.drawCheckbox)
+        buttonConfirm.pack(side=tk.LEFT)
+        bottomInput.pack()
 
-def removeInputStuff():
-    inputStuff.pack_forget()
-    buttonAdd.pack()
-    buttonDone.pack_forget()
-    master.unbind('<Return>')
+        buttonDone = tk.Button(self, text = "Close Input", command=master.hideInputStuff)
+        buttonDone.pack()
 
+    def drawCheckbox(self, event=None):
+        self.master.add(self.entry.get())
+        self.entry.delete(0, tk.END)
 
-buttonDone = tkinter.Button(inputStuff, text = "Close Input", command=removeInputStuff)
+class MainWindow(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        
+        self.filepath = os.path.expanduser(r'~\Documents\joseDzirehChongToDoList\toDoListSaveFile.json')
 
+        self.checkboxList = []
 
-buttonAdd = tkinter.Button(masterFrame, text="Add Item", command=createInputStuff)
-buttonAdd.pack()
+        self.checkboxArea = CheckboxArea(self)
+        self.checkboxArea.pack(fill=tk.X)
 
+        self.inputStuff = InputStuff(self)
+        self.addButton = tk.Button(self, text="Add Item", command=self.showInputStuff)
 
-topInput = tkinter.Frame(inputStuff)
-bottomInput = tkinter.Frame(inputStuff)
+        self.hideInputStuff() # start with "add" button active
 
-topInput.pack()
-bottomInput.pack()
+        self.load()
+        
+    def loadToJSON(self):
+        with open (self.filepath, 'w') as outfile:
+            json.dump(self.checkboxList, outfile)
+            
+        print(self.checkboxList)
 
-prompt = tkinter.Label(topInput, text="What do you want your checkbox to be for?")
-prompt.pack()
-entry = tkinter.Entry(bottomInput, bd=3)
-entry.pack(side=tkinter.LEFT)
-buttonConfirm = tkinter.Button(bottomInput, text="Confirm", command=drawCheckbox)
-buttonConfirm.pack(side=tkinter.LEFT)
+    def add(self, name):
+        self.checkboxArea.add(name)
+        self.checkboxList.append(name)
+        self.loadToJSON()
 
-master.mainloop()
+    def showInputStuff(self):
+        self.addButton.pack_forget()
+        self.inputStuff.pack()
+        self.inputStuff.entry.focus()
+        self.master.bind('<Return>', self.inputStuff.drawCheckbox)
+
+    def hideInputStuff(self):
+        self.inputStuff.pack_forget()
+        self.addButton.pack()
+        self.master.unbind('<Return>')
+
+    def load(self):
+        def checkExistenceOfSaveFile():
+            if not os.path.isdir(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList')):
+                os.makedirs(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList'), 777)
+                
+                if not os.path.isfile(self.filepath):
+                    open(self.filepath, 'w')
+                    open(self.filepath).close()
+                    
+        def checkIfSaveFileIsEmpty():
+            if os.path.getsize(self.filepath) == 0:
+                self.loadToJSON()
+                
+        def lastStand():
+            try:
+                with open(self.filepath) as infile:    
+                    checkboxList = json.load(infile)
+                for savedCheckbox in checkboxList:
+                    self.checkboxArea.add(savedCheckbox)
+                    self.checkboxList.append(savedCheckbox)
+            except (ValueError, IOError):
+                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
+
+Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
+
+            
+
+        checkExistenceOfSaveFile()
+        checkIfSaveFileIsEmpty()
+        lastStand()
+        
+def main():
+    master = tk.Tk()
+    master.title("To-Do List (with saving!)")
+    master.geometry("300x300")
+    win = MainWindow(master)
+    win.pack(fill=tk.X)
+    master.mainloop()
+
+if __name__ == '__main__':
+    main()
