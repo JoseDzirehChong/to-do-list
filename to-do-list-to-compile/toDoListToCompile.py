@@ -6,6 +6,8 @@ Created on Sun Jan 22 14:47:36 2017
 @author: Jose Chong
 """
 
+#<IMPORTS>
+
 import json
 
 try:
@@ -15,7 +17,9 @@ except ImportError:
 import os
 import pymsgbox
 
-class CheckboxRow(tk.Frame):
+#</IMPORTS>
+
+class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.name = name
@@ -28,9 +32,10 @@ class CheckboxRow(tk.Frame):
                                 command=self.destroyCheckbox)
         deleteItem.pack(side=tk.RIGHT)
 
-    def destroyCheckbox(self):
+    def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
         self.master.master.checkboxList.remove(self.name)
         self.destroy()
+        self.master.master.loadToJSON()
 
 class CheckboxArea(tk.Frame):
     def add(self, name):
@@ -116,7 +121,8 @@ class MainWindow(tk.Frame):
                 with open(self.filepath) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
-                    self.add(savedCheckbox)
+                    self.checkboxArea.add(savedCheckbox)
+                    self.checkboxList.append(savedCheckbox)
             except (ValueError, IOError):
                 pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
 
