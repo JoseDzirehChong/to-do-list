@@ -35,7 +35,7 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
         self.master.master.checkboxList.remove(self.name)
         self.destroy()
-        self.master.master.loadToJSON()
+        self.master.master.saveToJSON()
 
 class CheckboxArea(tk.Frame):
     def add(self, name):
@@ -81,7 +81,7 @@ class MainWindow(tk.Frame):
 
         self.load()
         
-    def loadToJSON(self):
+    def saveToJSON(self):
         with open (self.filepath, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
@@ -90,7 +90,7 @@ class MainWindow(tk.Frame):
     def add(self, name):
         self.checkboxArea.add(name)
         self.checkboxList.append(name)
-        self.loadToJSON()
+        self.saveToJSON()
 
     def showInputStuff(self):
         self.addButton.pack_forget()
@@ -114,7 +114,7 @@ class MainWindow(tk.Frame):
                     
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:
-                self.loadToJSON()
+                self.saveToJSON()
                 
         def lastStand():
             try:
