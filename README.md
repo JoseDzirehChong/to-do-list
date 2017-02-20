@@ -17,7 +17,7 @@ The modules it uses are:
 
 There's two ways to go about this.
 
-If you want access to the code, download `toDoListToCompile.py` from the `to-do-list-to-compile` folder. `toDoListToCompile.py` can also be found as part of the source code download in the "Releases" section of this repository. Install [`pymsgbox`](http://pymsgbox.readthedocs.io/en/latest/basics.html). Finally, run `toDoListToCompile.py` using your IDE of choice. All modules other than `pymsgbox` already come with Python, so installation of those is not necessary.
+If you want access to the code, download `toDoList.py` from the `to-do-list` folder. `toDoList.py` can also be found as part of the source code download in the "Releases" section of this repository. Install [`pymsgbox`](http://pymsgbox.readthedocs.io/en/latest/basics.html). Finally, run `toDoList.py` using your IDE of choice. All modules other than `pymsgbox` already come with Python, so installation of those is not necessary.
 
 If you just want a to-do list, download the exe from the link under "Info", then run it as you would a normal program.
 
