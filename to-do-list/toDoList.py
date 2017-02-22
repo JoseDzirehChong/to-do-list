@@ -22,18 +22,24 @@ import pymsgbox
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
+        
         self.name = name
-
-        checkbox = tk.Checkbutton(self, text=name)
+        if not hasattr(self, 'checkedStatus'):
+            self.checkedStatus = tk.IntVar()
+        
+        checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus)
         checkbox.pack(side=tk.LEFT)
+        
+        self.master.master.checkboxList.append([name, self.checkedStatus.get()])
 
         deleteItem = tk.Button(self, text="x", bg="red", fg="white",
                                 activebackground="white", activeforeground="red",
                                 command=self.destroyCheckbox)
         deleteItem.pack(side=tk.RIGHT)
+        
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
-        self.master.master.checkboxList.remove(self.name)
+        self.master.master.checkboxList.remove([self.name, self.checkedStatus.get()])
         self.destroy()
         self.master.master.saveToJSON()
 
@@ -85,11 +91,10 @@ class MainWindow(tk.Frame):
         with open (self.filepath, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        #print(self.checkboxList) #for debugging purposes
+        print(self.checkboxList) #for debugging purposes
 
     def add(self, name):
         self.checkboxArea.add(name)
-        self.checkboxList.append(name)
         self.saveToJSON()
 
     def showInputStuff(self):
@@ -108,9 +113,9 @@ class MainWindow(tk.Frame):
             if not os.path.isdir(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList')):
                 os.makedirs(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList'), 777)
                 
-                if not os.path.isfile(self.filepath):
-                    open(self.filepath, 'w')
-                    open(self.filepath).close()
+            if not os.path.isfile(self.filepath):
+                open(self.filepath, 'w')
+                open(self.filepath).close()
                     
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:
@@ -121,12 +126,9 @@ class MainWindow(tk.Frame):
                 with open(self.filepath) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
-                    self.checkboxArea.add(savedCheckbox)
-                    self.checkboxList.append(savedCheckbox)
+                    self.checkboxArea.add(savedCheckbox[0])
             except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file (can be found at """ + self.filepath + """) attached so I can tell what went wrong.
-
-Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
+                pymsgbox.alert("""Error Message""", 'Broken Save File')
 
             
 
