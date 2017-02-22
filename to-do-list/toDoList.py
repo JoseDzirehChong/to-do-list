@@ -85,7 +85,7 @@ class MainWindow(tk.Frame):
         with open (self.filepath, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        print(self.checkboxList)
+        #print(self.checkboxList) #for debugging purposes
 
     def add(self, name):
         self.checkboxArea.add(name)
@@ -124,7 +124,7 @@ class MainWindow(tk.Frame):
                     self.checkboxArea.add(savedCheckbox)
                     self.checkboxList.append(savedCheckbox)
             except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached so I can tell what went wrong.
+                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file (can be found at """ + self.filepath + """) attached so I can tell what went wrong.
 
 Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
 
