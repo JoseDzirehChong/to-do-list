@@ -21,25 +21,49 @@ import pymsgbox
 
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
-        tk.Frame.__init__(self, master, **kwargs)
+        tk.Frame.__init__(self, master)
+        
         self.name = name
-
-        checkbox = tk.Checkbutton(self, text=name)
+        self.checkedStatus = tk.IntVar()
+        
+        if "variable" in kwargs and kwargs["variable"] == 1:
+                self.checkedStatus.set(1)
+                
+        self.master.master.checkboxList.append([name, self.checkedStatus.get()])
+        
+        checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
         checkbox.pack(side=tk.LEFT)
 
         deleteItem = tk.Button(self, text="x", bg="red", fg="white",
                                 activebackground="white", activeforeground="red",
                                 command=self.destroyCheckbox)
         deleteItem.pack(side=tk.RIGHT)
+        
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
-        self.master.master.checkboxList.remove(self.name)
+        list = self.master.master.checkboxList
+        
+        try:
+            list.remove([self.name, 0])
+        except ValueError:
+            list.remove([self.name, 1])
+
         self.destroy()
+        self.master.master.saveToJSON()
+        
+    def toggleStatus(self, event=None):
+        list = self.master.master.checkboxList
+        try:
+            list[list.index([self.name, 0])][1] = 1
+
+        except ValueError:
+            list[list.index([self.name, 1])][1] = 0
+                 
         self.master.master.saveToJSON()
 
 class CheckboxArea(tk.Frame):
-    def add(self, name):
-        row = CheckboxRow(self, name)
+    def add(self, name, **kwargs):
+        row = CheckboxRow(self, name, **kwargs)
         row.pack(fill=tk.X)
 
 class InputStuff(tk.Frame):
@@ -85,11 +109,10 @@ class MainWindow(tk.Frame):
         with open (self.filepath, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        #print(self.checkboxList) #for debugging purposes
+        print(self.checkboxList) #for debugging purposes
 
-    def add(self, name):
-        self.checkboxArea.add(name)
-        self.checkboxList.append(name)
+    def add(self, name, **kwargs):
+        self.checkboxArea.add(name, **kwargs)
         self.saveToJSON()
 
     def showInputStuff(self):
@@ -108,9 +131,9 @@ class MainWindow(tk.Frame):
             if not os.path.isdir(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList')):
                 os.makedirs(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList'), 777)
                 
-                if not os.path.isfile(self.filepath):
-                    open(self.filepath, 'w')
-                    open(self.filepath).close()
+            if not os.path.isfile(self.filepath):
+                open(self.filepath, 'w')
+                open(self.filepath).close()
                     
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:
@@ -121,10 +144,9 @@ class MainWindow(tk.Frame):
                 with open(self.filepath) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
-                    self.checkboxArea.add(savedCheckbox)
-                    self.checkboxList.append(savedCheckbox)
+                    self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
             except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message ever. If you do, that means your save file is either missing or corrupted, and my methods of stopping that have failed. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file (can be found at """ + self.filepath + """) attached so I can tell what went wrong.
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """. 
 
 Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
 
@@ -141,6 +163,7 @@ def main():
     win = MainWindow(master)
     win.pack(fill=tk.X)
     master.mainloop()
+    win.saveToJSON()
 
 if __name__ == '__main__':
     main()
