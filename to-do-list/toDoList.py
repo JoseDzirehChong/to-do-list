@@ -94,8 +94,8 @@ class MainWindow(tk.Frame):
             
         print(self.checkboxList) #for debugging purposes
 
-    def add(self, name):
-        self.checkboxArea.add(name)
+    def add(self, name, **kwargs):
+        self.checkboxArea.add(name, **kwargs)
         self.saveToJSON()
 
     def showInputStuff(self):
