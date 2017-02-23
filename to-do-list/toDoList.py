@@ -25,7 +25,7 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         
         self.name = name
         self.checkedStatus = tk.IntVar()
-        if "variable" in kwargs and variable == 1:
+        if "variable" in kwargs and kwargs["variable"] == 1:
                 self.checkedStatus.set(1)
         
         checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus)
