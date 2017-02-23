@@ -25,13 +25,14 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         
         self.name = name
         self.checkedStatus = tk.IntVar()
+        
         if "variable" in kwargs and kwargs["variable"] == 1:
                 self.checkedStatus.set(1)
-        
-        checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus)
-        checkbox.pack(side=tk.LEFT)
-        
+                
         self.master.master.checkboxList.append([name, self.checkedStatus.get()])
+        
+        checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
+        checkbox.pack(side=tk.LEFT)
 
         deleteItem = tk.Button(self, text="x", bg="red", fg="white",
                                 activebackground="white", activeforeground="red",
@@ -40,8 +41,24 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
-        self.master.master.checkboxList.remove([self.name, self.checkedStatus.get()])
+        list = self.master.master.checkboxList
+        
+        try:
+            list.remove([self.name, 0])
+        except ValueError:
+            list.remove([self.name, 1])
+
         self.destroy()
+        self.master.master.saveToJSON()
+        
+    def toggleStatus(self, event=None):
+        list = self.master.master.checkboxList
+        try:
+            list[list.index([self.name, 0])][1] = 1
+
+        except ValueError:
+            list[list.index([self.name, 1])][1] = 0
+                 
         self.master.master.saveToJSON()
 
 class CheckboxArea(tk.Frame):
@@ -146,6 +163,7 @@ def main():
     win = MainWindow(master)
     win.pack(fill=tk.X)
     master.mainloop()
+    win.saveToJSON()
 
 if __name__ == '__main__':
     main()
