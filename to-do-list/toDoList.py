@@ -21,11 +21,12 @@ import pymsgbox
 
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
-        tk.Frame.__init__(self, master, **kwargs)
+        tk.Frame.__init__(self, master)
         
         self.name = name
-        if not hasattr(self, 'checkedStatus'):
-            self.checkedStatus = tk.IntVar()
+        self.checkedStatus = tk.IntVar()
+        if "variable" in kwargs and variable == 1:
+                self.checkedStatus.set(1)
         
         checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus)
         checkbox.pack(side=tk.LEFT)
@@ -44,8 +45,8 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         self.master.master.saveToJSON()
 
 class CheckboxArea(tk.Frame):
-    def add(self, name):
-        row = CheckboxRow(self, name)
+    def add(self, name, **kwargs):
+        row = CheckboxRow(self, name, **kwargs)
         row.pack(fill=tk.X)
 
 class InputStuff(tk.Frame):
@@ -126,9 +127,11 @@ class MainWindow(tk.Frame):
                 with open(self.filepath) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
-                    self.checkboxArea.add(savedCheckbox[0])
+                    self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
             except (ValueError, IOError):
-                pymsgbox.alert("""Error Message""", 'Broken Save File')
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """. 
+
+Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
 
             
 
