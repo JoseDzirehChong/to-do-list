@@ -158,7 +158,7 @@ Click the button below to exit, the red X button in the corner doesn't work.""",
         
 def main():
     master = tk.Tk()
-    master.title("To-Do List (with saving!)")
+    master.title("To-Do List")
     master.geometry("300x300")
     win = MainWindow(master)
     win.pack(fill=tk.X)
