@@ -91,7 +91,7 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        self.filepath = os.path.expanduser(r'~\Documents\joseDzirehChongToDoList\toDoListSaveFile.json')
+        self.filepath = os.path.expanduser(r'~/Documents/joseDzirehChongToDoList/toDoListSaveFile.json')
 
         self.checkboxList = []
 
@@ -109,7 +109,7 @@ class MainWindow(tk.Frame):
         with open (self.filepath, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        #print(self.checkboxList) #for debugging purposes
+        print(self.checkboxList) #for debugging purposes
 
     def add(self, name, **kwargs):
         self.checkboxArea.add(name, **kwargs)
@@ -128,8 +128,8 @@ class MainWindow(tk.Frame):
 
     def load(self):
         def checkExistenceOfSaveFile():
-            if not os.path.isdir(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList')):
-                os.makedirs(os.path.expanduser(r'~\Documents\joseDzirehChongToDoList'), 777)
+            if not os.path.isdir(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList')):
+                os.makedirs(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList'), 777)
                 
             if not os.path.isfile(self.filepath):
                 open(self.filepath, 'w')
@@ -146,9 +146,7 @@ class MainWindow(tk.Frame):
                 for savedCheckbox in checkboxList:
                     self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
             except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """. 
-
-Click the button below to exit, the red X button in the corner doesn't work.""", 'Broken Save File')
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """.""", 'Broken Save File')
 
             
 
