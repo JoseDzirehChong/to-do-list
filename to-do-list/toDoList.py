@@ -146,7 +146,7 @@ class MainWindow(tk.Frame):
                 for savedCheckbox in checkboxList:
                     self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
             except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at 'josedzirehchong@gmail.com' with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """.""", 'Broken Save File')
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """.""", 'Broken Save File')
 
             
 
