@@ -91,7 +91,7 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        self.filepath = os.path.expanduser(r'~/Documents/joseDzirehChongToDoList/toDoListSaveFile.json')
+        self.filepath = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
 
         self.checkboxList = []
 
@@ -128,8 +128,8 @@ class MainWindow(tk.Frame):
 
     def load(self):
         def checkExistenceOfSaveFile():
-            if not os.path.isdir(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList')):
-                os.makedirs(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList'), 777)
+            if not os.path.isdir(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))):
+                os.makedirs(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList")), 777)
                 
             if not os.path.isfile(self.filepath):
                 open(self.filepath, 'w')
