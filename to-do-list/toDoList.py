@@ -132,8 +132,9 @@ class MainWindow(tk.Frame):
                 os.makedirs(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList")), 777)
                 
             if not os.path.isfile(self.filepath):
-                open(self.filepath, 'w')
-                open(self.filepath).close()
+                f = open(self.filepath, 'w')
+                os.chmod(self.filepath, 777)
+                f.close()
                     
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.filepath) == 0:

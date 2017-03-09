@@ -1,4 +1,6 @@
 import os
 
-folderFilepath = os.path.join(os.path.expanduser(), "Documents", "joseDzirehChongToDoList")
-savefileFilepath = os.path.join(os.path.expanduser(), "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json")
+folderFilepath = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+savefileFilepath = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
+print("joseDzirehChongToDoList has %s permissions" % oct(os.stat(folderFilepath).st_mode))
+print("toDoListSaveFile.json has %s permissions" % oct(os.stat(savefileFilepath).st_mode))
