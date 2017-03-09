@@ -1,6 +1,18 @@
 import os
+import pwd
 
-folderFilepath = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
-savefileFilepath = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
-print("joseDzirehChongToDoList has %s permissions" % oct(os.stat(folderFilepath).st_mode)[-3:])
-print("toDoListSaveFile.json has %s permissions" % oct(os.stat(savefileFilepath).st_mode)[-3:])
+FOLDER_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+SAVEFILE_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
+
+folderPermissions = oct(os.stat(FOLDER_FILEPATH).st_mode)[-3:]
+savefilePermissions = oct(os.stat(SAVEFILE_FILEPATH).st_mode)[-3:]
+
+folderOwner = pwd.getpwuid(os.stat(FOLDER_FILEPATH).st_uid).pw_name
+savefileOwner = pwd.getpwuid(os.stat(SAVEFILE_FILEPATH).st_uid).pw_name
+
+def printPermissionsAndOwnership():
+    print("joseDzirehChongToDoList has {} permissions and is owned by {}".format(folderPermissions, folderOwner)
+    print()
+    print("toDoListSaveFile.json has {} permissions and is owned by {}".format(savefilePermissions, savefileOwner)
+
+printPermissionsAndOwnership()
