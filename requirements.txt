@@ -1,8 +1,6 @@
 Windows:
   toDoList.py:
     pymsgbox
-  permissionsChecker.py:
-    winpwd
   
 Other operating systems:
   toDoList.py:
