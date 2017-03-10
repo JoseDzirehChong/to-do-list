@@ -91,7 +91,7 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        self.filepath = os.path.expanduser(r'~/Documents/joseDzirehChongToDoList/toDoListSaveFile.json')
+        self.SAVEFILE_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
 
         self.checkboxList = []
 
@@ -106,7 +106,7 @@ class MainWindow(tk.Frame):
         self.load()
         
     def saveToJSON(self):
-        with open (self.filepath, 'w') as outfile:
+        with open (self.SAVEFILE_FILEPATH, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
         print(self.checkboxList) #for debugging purposes
@@ -128,25 +128,26 @@ class MainWindow(tk.Frame):
 
     def load(self):
         def checkExistenceOfSaveFile():
-            if not os.path.isdir(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList')):
-                os.makedirs(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList'), 777)
-                
-            if not os.path.isfile(self.filepath):
-                open(self.filepath, 'w')
-                open(self.filepath).close()
-                    
+            if not os.path.isdir(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))):
+                os.makedirs(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList")), 777)
+            
+            if not os.path.isfile(self.SAVEFILE_FILEPATH):
+                f = open(self.SAVEFILE_FILEPATH, 'w')
+                f.close()
+                os.chmod(self.SAVEFILE_FILEPATH, 666)
+                            
         def checkIfSaveFileIsEmpty():
-            if os.path.getsize(self.filepath) == 0:
+            if os.path.getsize(self.SAVEFILE_FILEPATH) == 0:
                 self.saveToJSON()
                 
         def lastStand():
             try:
-                with open(self.filepath) as infile:    
+                with open(self.SAVEFILE_FILEPATH) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
                     self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
-            except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """.""", 'Broken Save File')
+            except (ValueError, IOError, PermissionError):
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.SAVEFILE_FILEPATH + """.""", 'Broken Save File')
 
             
 
