@@ -1,1 +1,5 @@
-pymsgbox
+Windows:
+  winpwd
+  
+Other:
+  pwd
