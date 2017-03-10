@@ -4,7 +4,7 @@ Windows:
   permissionsChecker.py:
     winpwd
   
-Other:
+Other operating systems:
   toDoList.py:
     pymsgbox
   permissionsChecker.py:
