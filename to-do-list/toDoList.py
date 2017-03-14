@@ -156,9 +156,11 @@ class MainWindow(tk.Frame):
         lastStand()
         
 def main():
+    WIDTH = 300
+    HEIGHT = 300
     master = tk.Tk()
     master.title("To-Do List")
-    master.geometry("300x300")
+    master.geometry("{}x{}".format(WIDTH, HEIGHT))
     win = MainWindow(master)
     win.pack(fill=tk.X)
     master.mainloop()
