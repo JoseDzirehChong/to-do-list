@@ -3,7 +3,7 @@
 
 """
 Created on Sun Jan 22 14:47:36 2017
-@author: Jose Chong
+@author: Jose Dzireh Chong
 """
 
 #<IMPORTS>
