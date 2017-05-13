@@ -26,7 +26,7 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         self.name = name
         self.checkedStatus = tk.IntVar()
         
-        if "variable" in kwargs and kwargs["variable"] == 1:
+        if kwargs.get("variable") == 1:
                 self.checkedStatus.set(1)
                 
         self.master.master.checkboxList.append([name, self.checkedStatus.get()])
@@ -41,23 +41,23 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
-        list = self.master.master.checkboxList
+        destroyCheckbox_checkboxList = self.master.master.checkboxList
         
         try:
-            list.remove([self.name, 0])
+            destroyCheckbox_checkboxList.remove([self.name, 0])
         except ValueError:
-            list.remove([self.name, 1])
+            destroyCheckbox_checkboxList.remove([self.name, 1])
 
         self.destroy()
         self.master.master.saveToJSON()
         
     def toggleStatus(self, event=None):
-        list = self.master.master.checkboxList
+        toggleStatus_checkboxList = self.master.master.checkboxList
         try:
-            list[list.index([self.name, 0])][1] = 1
+            toggleStatus_checkboxList[toggleStatus_checkboxList.index([self.name, 0])][1] = 1
 
         except ValueError:
-            list[list.index([self.name, 1])][1] = 0
+            toggleStatus_checkboxList[toggleStatus_checkboxList.index([self.name, 1])][1] = 0
                  
         self.master.master.saveToJSON()
 
@@ -112,7 +112,7 @@ class MainWindow(tk.Frame):
         with open (self.SAVEFILE_FILEPATH, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        #print(self.checkboxList) #for debugging purposes
+        print(self.checkboxList) #for debugging purposes
 
     def add(self, name, **kwargs):
         self.checkboxArea.add(name, **kwargs)
