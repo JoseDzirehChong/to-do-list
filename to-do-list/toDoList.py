@@ -112,7 +112,7 @@ class MainWindow(tk.Frame):
         with open (self.SAVEFILE_FILEPATH, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
-        print(self.checkboxList) #for debugging purposes
+        #print(self.checkboxList) #for debugging purposes
 
     def add(self, name, **kwargs):
         self.checkboxArea.add(name, **kwargs)
