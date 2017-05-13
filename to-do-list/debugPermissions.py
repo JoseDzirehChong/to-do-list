@@ -7,14 +7,17 @@ Created on Sun Jan 22 14:47:36 2017
 """
 import os
 
-SAVEFILE_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
+#build the directory and file paths
+SAVEFILE_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+SAVEFILE_FILEPATH = os.path.join(SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
 
 def createFile():
-    if not os.path.isdir(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))):
-        os.makedirs(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList")), 777)
+    if not os.path.isdir(SAVEFILE_DIR_FILEPATH):
+        os.makedirs(SAVEFILE_DIR_FILEPATH, 0o0777)
+
     if not os.path.isfile(SAVEFILE_FILEPATH):
         f = open(SAVEFILE_FILEPATH, 'w')
         f.close()
-        os.chmod(SAVEFILE_FILEPATH, 666)
-    
+        os.chmod(SAVEFILE_FILEPATH, 0o0666)
+
 createFile()

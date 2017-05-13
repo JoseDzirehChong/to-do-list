@@ -91,8 +91,11 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        self.SAVEFILE_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList", "toDoListSaveFile.json"))
-
+        #<define filepaths>
+        self.SAVEFILE_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+        self.SAVEFILE_FILEPATH = os.path.join(self.SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
+        #</define filepaths>
+        
         self.checkboxList = []
 
         self.checkboxArea = CheckboxArea(self)
@@ -127,14 +130,17 @@ class MainWindow(tk.Frame):
         self.master.unbind('<Return>')
 
     def load(self):
-        def checkExistenceOfSaveFile():
-            if not os.path.isdir(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))):
-                os.makedirs(os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList")), 777)
-            
+        
+        #<check if savefile and its parent directory exist, if not, create them>
+        def createFile():
+            if not os.path.isdir(self.SAVEFILE_DIR_FILEPATH):
+                os.makedirs(self.SAVEFILE_DIR_FILEPATH, 0o0777)
+
             if not os.path.isfile(self.SAVEFILE_FILEPATH):
                 f = open(self.SAVEFILE_FILEPATH, 'w')
                 f.close()
-                os.chmod(self.SAVEFILE_FILEPATH, 666)
+                os.chmod(self.SAVEFILE_FILEPATH, 0o0666)
+        #</check if savefile and its parent directory exist, if not, create them>
                             
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.SAVEFILE_FILEPATH) == 0:
@@ -149,9 +155,7 @@ class MainWindow(tk.Frame):
             except (ValueError, IOError, PermissionError):
                 pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.SAVEFILE_FILEPATH + """.""", 'Broken Save File')
 
-            
-
-        checkExistenceOfSaveFile()
+        createFile()
         checkIfSaveFileIsEmpty()
         lastStand()
         
