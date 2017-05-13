@@ -6,6 +6,8 @@ Created on Sun Jan 22 14:47:36 2017
 @author: Jose Dzireh Chong
 """
 
+#greatly improved by https://github.com/novel-yet-trivial
+
 #<IMPORTS>
 
 import json
