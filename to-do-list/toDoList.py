@@ -3,7 +3,7 @@
 
 """
 Created on Sun Jan 22 14:47:36 2017
-@author: Jose Chong
+@author: Jose Dzireh Chong
 """
 
 #<IMPORTS>
@@ -91,8 +91,11 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        self.filepath = os.path.expanduser(r'~/Documents/joseDzirehChongToDoList/toDoListSaveFile.json')
-
+        #<define filepaths>
+        self.SAVEFILE_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+        self.SAVEFILE_FILEPATH = os.path.join(self.SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
+        #</define filepaths>
+        
         self.checkboxList = []
 
         self.checkboxArea = CheckboxArea(self)
@@ -106,7 +109,7 @@ class MainWindow(tk.Frame):
         self.load()
         
     def saveToJSON(self):
-        with open (self.filepath, 'w') as outfile:
+        with open (self.SAVEFILE_FILEPATH, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
             
         print(self.checkboxList) #for debugging purposes
@@ -127,37 +130,41 @@ class MainWindow(tk.Frame):
         self.master.unbind('<Return>')
 
     def load(self):
-        def checkExistenceOfSaveFile():
-            if not os.path.isdir(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList')):
-                os.makedirs(os.path.expanduser(r'~/Documents/joseDzirehChongToDoList'), 777)
-                
-            if not os.path.isfile(self.filepath):
-                open(self.filepath, 'w')
-                open(self.filepath).close()
-                    
+        
+        #<check if savefile and its parent directory exist, if not, create them>
+        def createFile():
+            if not os.path.isdir(self.SAVEFILE_DIR_FILEPATH):
+                os.makedirs(self.SAVEFILE_DIR_FILEPATH, 0o0777)
+
+            if not os.path.isfile(self.SAVEFILE_FILEPATH):
+                f = open(self.SAVEFILE_FILEPATH, 'w')
+                f.close()
+                os.chmod(self.SAVEFILE_FILEPATH, 0o0666)
+        #</check if savefile and its parent directory exist, if not, create them>
+                            
         def checkIfSaveFileIsEmpty():
-            if os.path.getsize(self.filepath) == 0:
+            if os.path.getsize(self.SAVEFILE_FILEPATH) == 0:
                 self.saveToJSON()
                 
         def lastStand():
             try:
-                with open(self.filepath) as infile:    
+                with open(self.SAVEFILE_FILEPATH) as infile:    
                     checkboxList = json.load(infile)
                 for savedCheckbox in checkboxList:
                     self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
-            except (ValueError, IOError):
-                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.filepath + """.""", 'Broken Save File')
+            except (ValueError, IOError, PermissionError):
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.SAVEFILE_FILEPATH + """.""", 'Broken Save File')
 
-            
-
-        checkExistenceOfSaveFile()
+        createFile()
         checkIfSaveFileIsEmpty()
         lastStand()
         
 def main():
+    WIDTH = 300
+    HEIGHT = 300
     master = tk.Tk()
     master.title("To-Do List")
-    master.geometry("300x300")
+    master.geometry("{}x{}".format(WIDTH, HEIGHT))
     win = MainWindow(master)
     win.pack(fill=tk.X)
     master.mainloop()
