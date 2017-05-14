@@ -8,10 +8,8 @@ Created on Sun Jan 22 14:47:36 2017
 
 #greatly improved by https://github.com/novel-yet-trivial
 
-#<IMPORTS>
-
+#imports
 import json
-
 try:
     import tkinter as tk
 except ImportError:
@@ -19,7 +17,6 @@ except ImportError:
 import os
 import pymsgbox
 
-#</IMPORTS>
 
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
@@ -95,10 +92,9 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         
-        #<define filepaths>
+        #define filepaths
         self.SAVEFILE_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
         self.SAVEFILE_FILEPATH = os.path.join(self.SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
-        #</define filepaths>
         
         self.checkboxList = {}
         self.checkboxNumber = 0
@@ -123,21 +119,20 @@ class MainWindow(tk.Frame):
         self.checkboxArea.add(name, **kwargs)
         self.saveToJSON()
 
-    def showInputStuff(self):
+    def showInputStuff(self): #hides "add item" button. shows input text, box, and "confirm" button (all in inputStuff). binds "confirm" button to return key for ease of use
         self.addButton.pack_forget()
         self.inputStuff.pack()
         self.inputStuff.entry.focus()
         self.master.bind('<Return>', self.inputStuff.drawCheckbox)
 
-    def hideInputStuff(self):
+    def hideInputStuff(self): #hides input text, box, and "confirm" button (all in inputStuff). shows "add item" button. unbinds "confirm" button from the return key since that button is no longer on the screen
         self.inputStuff.pack_forget()
         self.addButton.pack()
         self.master.unbind('<Return>')
 
     def load(self):
         
-        #<check if savefile and its parent directory exist, if not, create them>
-        def createFile():
+        def createFile(): #check if savefile and its parent directory exist, if not, create them
             if not os.path.isdir(self.SAVEFILE_DIR_FILEPATH):
                 os.makedirs(self.SAVEFILE_DIR_FILEPATH, 0o0777)
 
@@ -145,13 +140,12 @@ class MainWindow(tk.Frame):
                 f = open(self.SAVEFILE_FILEPATH, 'w')
                 f.close()
                 os.chmod(self.SAVEFILE_FILEPATH, 0o0666)
-        #</check if savefile and its parent directory exist, if not, create them>
                             
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.SAVEFILE_FILEPATH) == 0:
                 self.saveToJSON()
                 
-        def lastStand():
+        def lastStand(): #badly named function, loads list items from JSON when the JSON file exists, if not possible, alerts the user that something's not right
             try:
                 with open(self.SAVEFILE_FILEPATH) as infile:    
                     checkboxList = json.load(infile)
@@ -166,14 +160,20 @@ class MainWindow(tk.Frame):
         lastStand()
         
 def main():
+    
+    #define width and height to avoid magic numbers
     WIDTH = 300
     HEIGHT = 300
+    
+    #basically making the window for this program
     master = tk.Tk()
     master.title("To-Do List")
     master.geometry("{}x{}".format(WIDTH, HEIGHT))
     win = MainWindow(master)
     win.pack(fill=tk.X)
     master.mainloop()
+    
+    #saving to JSON at the end of every run of this program for redundancy
     win.saveToJSON()
 
 if __name__ == '__main__':
