@@ -25,13 +25,17 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
     def __init__(self, master, name, **kwargs):
         tk.Frame.__init__(self, master)
         
+        MainWin = self.master.master
+                
         self.name = name
-        self.checkedStatus = tk.IntVar()
+        self.checkedStatus = tk.IntVar()  
+        self.number = MainWin.checkboxNumber
         
         if kwargs.get("variable") == 1:
                 self.checkedStatus.set(1)
                 
-        self.master.master.checkboxList.append([name, self.checkedStatus.get()])
+        MainWin.checkboxList[self.number] = [name, self.checkedStatus.get()]
+        MainWin.checkboxNumber += 1
         
         checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
         checkbox.pack(side=tk.LEFT)
@@ -43,23 +47,21 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
-        destroyCheckbox_checkboxList = self.master.master.checkboxList
+        destroyCheckbox_list = self.master.master.checkboxList
         
-        try:
-            destroyCheckbox_checkboxList.remove([self.name, 0])
-        except ValueError:
-            destroyCheckbox_checkboxList.remove([self.name, 1])
+        destroyCheckbox_list.pop(self.number)
 
         self.destroy()
         self.master.master.saveToJSON()
         
     def toggleStatus(self, event=None):
-        toggleStatus_checkboxList = self.master.master.checkboxList
-        try:
-            toggleStatus_checkboxList[toggleStatus_checkboxList.index([self.name, 0])][1] = 1
+        MainWin = self.master.master
+        toggleStatus_list = MainWin.checkboxList
+        if toggleStatus_list[self.number][1] == 1:
+            toggleStatus_list[self.number][1] = 0
 
-        except ValueError:
-            toggleStatus_checkboxList[toggleStatus_checkboxList.index([self.name, 1])][1] = 0
+        elif toggleStatus_list[self.number][1] == 0:
+            toggleStatus_list[self.number][1] = 1
                  
         self.master.master.saveToJSON()
 
@@ -98,7 +100,8 @@ class MainWindow(tk.Frame):
         self.SAVEFILE_FILEPATH = os.path.join(self.SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
         #</define filepaths>
         
-        self.checkboxList = []
+        self.checkboxList = {}
+        self.checkboxNumber = 0
 
         self.checkboxArea = CheckboxArea(self)
         self.checkboxArea.pack(fill=tk.X)
@@ -152,8 +155,9 @@ class MainWindow(tk.Frame):
             try:
                 with open(self.SAVEFILE_FILEPATH) as infile:    
                     checkboxList = json.load(infile)
-                for savedCheckbox in checkboxList:
-                    self.checkboxArea.add(savedCheckbox[0], variable=savedCheckbox[1])
+            
+                for key in checkboxList:
+                    self.checkboxArea.add(checkboxList[key][0], variable=checkboxList[key][1])
             except (ValueError, IOError, PermissionError):
                 pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your save file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your save file attached (if it doesn't exist just tell me). It can be found at """ + self.SAVEFILE_FILEPATH + """.""", 'Broken Save File')
 
