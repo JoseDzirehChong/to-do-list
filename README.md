@@ -6,6 +6,8 @@ This is a to-do list. It saves between runs of the program through writing list 
 
 Please note that renaming the save file or the folders it is in will cause a new savefile to be created. This to-do list will not be able to retrieve data from your original file (until you rename it and the directories it is in to their original name), instead it will retrieve data from the new savefile it has created. 
 
+Created by Jose Dzireh Chong.
+
 The modules it uses are:
 
 - `tkinter` (makes the interface)
