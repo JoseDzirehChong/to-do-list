@@ -10,6 +10,7 @@ Created on Sun Jan 22 14:47:36 2017
     #Make text dynamically change with window size
     #Add scrollbar
     #Possibly add ability to modify and rearrange list items
+    #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
 
 #greatly improved by https://github.com/novel-yet-trivial
 
