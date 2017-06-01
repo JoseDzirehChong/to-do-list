@@ -6,6 +6,11 @@ Created on Sun Jan 22 14:47:36 2017
 @author: Jose Dzireh Chong
 """
 
+#TODO:
+    #Make text dynamically change with window size
+    #Add scrollbar
+    #Possibly add ability to modify and rearrange list items
+
 #greatly improved by https://github.com/novel-yet-trivial
 
 #imports
