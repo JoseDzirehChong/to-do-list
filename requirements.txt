@@ -1,11 +1,2 @@
-Windows:
-  toDoList.py:
-    pymsgbox
-  
-Other operating systems:
-  toDoList.py:
-    pymsgbox
-  permissionsChecker.py:
-    pwd
-    
-Contact me at josedzirehchong@gmail.com if there are any issues with imports.
+pymsgbox
+pwd
