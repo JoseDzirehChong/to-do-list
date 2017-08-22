@@ -25,6 +25,6 @@ If you just want a to-do list, download the exe from the link under "About", the
 
 # Contact
 
-Email: `josedzirehchong@gmail.com`. Contact me on this email about bugs, feature requests, business inquiries etc..
+Email: `josedzirehchong@gmail.com`. Contact me on this email about bugs, feature requests, business inquiries etc.
 
 [Reddit](https://www.reddit.com/user/JoseDzirehChong): Just an alternative way to communicate with me, if you have an account
