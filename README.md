@@ -2,7 +2,7 @@
 
 [LATEST EXE HERE](https://github.com/JoseDzirehChong/to-do-list/releases/tag/v0.1.0)
 
-This is a to-do list. It saves between runs of the program through writing list items to a JSON file. It is coded using Python 3. It is the first "full" Python project I made for myself, that is, not following a tutorial.
+This is a to-do list. It saves between runs of the program through writing list items to a JSON file. It is coded using Python 3. It is the first "full" Python project I made by myself, that is, not following a tutorial.
 
 Please note that renaming the save file or the folders it is in will cause a new savefile to be created. This to-do list will not be able to retrieve data from your original file (until you rename it and the directories it is in to their original name), instead it will retrieve data from the new savefile it has created. 
 
