@@ -7,10 +7,10 @@ Created on Sun Jan 22 14:47:36 2017
 """
 
 #TODO:
-    #Make text dynamically change with window size
     #Add scrollbar
     #Possibly add ability to modify and rearrange list items
     #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
+    #Move SettingsWindow somewhere else, right now it's part of MainWindow so it's going to get destroyed.
 
 #greatly improved by https://github.com/novel-yet-trivial
 
@@ -114,9 +114,17 @@ class AddButtonArea(tk.Frame):
         self.addButton = tk.Button(self, text="Add Item", command=master.showInputStuff)
         self.addButton.pack()
         
-class SettingsButotnArea(tk.Frame):
+class SettingsButtonArea(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
+        self.settingsButton = tk.Button(self, text="Settings", command=self.switchToSettings)
+        self.settingsButton.pack()
+        
+        self.settingsWindow = SettingsWindow(self)
+        
+    def switchToSettings(self):
+        self.settingsWindow.pack()
+        self.master.pack_forget()
     
 class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
@@ -134,10 +142,11 @@ class MainWindow(tk.Frame):
         
         self.addButtonArea = AddButtonArea(self)
         self.addButtonArea.pack()
-
+        
         self.inputStuff = InputStuff(self.addButtonArea)
         
-        self.settingsButton = tk.Button(self, text="Settings")
+        self.settingsButtonArea = SettingsButtonArea(self)
+        self.settingsButtonArea.pack()
 
         self.hideInputStuff() # start with "add" button active
 
@@ -163,7 +172,6 @@ class MainWindow(tk.Frame):
         self.inputStuff.pack_forget()
         self.addButtonArea.addButton.pack()
         self.master.unbind('<Return>')
-        self.settingsButton.pack()
 
     def load(self):
         
@@ -194,11 +202,25 @@ class MainWindow(tk.Frame):
         checkIfSaveFileIsEmpty()
         lastStand()
         
+class SettingsWindow(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        self.widthHeightSettings = WidthHeightSettings(self)
+        
+class WidthHeightSettings(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        self.widthInput = tk.Entry(self, text = "Input Width (default 400px)")
+        self.heightInput = tk.Entry(self, text = "Input Height (default 400px)")
+        
+    def show(self):
+        self.widthInput.pack()
+        self.heightInput.pack()
+        
 def main():
     
     #define width and height to avoid magic numbers
-    WIDTH = 300
-    HEIGHT = 300
+    WIDTH = 400
+    HEIGHT = 400
     
     #basically making the window for this program
     master = tk.Tk()
