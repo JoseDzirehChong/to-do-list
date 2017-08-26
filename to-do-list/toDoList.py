@@ -23,7 +23,21 @@ except ImportError:
 import os
 import pymsgbox
 
+#credit to /u/Dviv for this class
+class WrappingCheckbutton(tk.Checkbutton):
+    '''a type of Checkbutton that automatically adjusts the wrap to the size'''
+    def __init__(self, master=None, **kwargs):
+        tk.Checkbutton.__init__(self, master, **kwargs)
+        self.bind('<Configure>', lambda e: self.config(wraplength=master.winfo_width()-65))
+        print(self.winfo_width())
 
+#credit to /u/novel_yet_trivial for this class
+class WrappingLabel(tk.Label):
+    '''a type of Label that automatically adjusts the wrap to the size'''
+    def __init__(self, master=None, **kwargs):
+        tk.Label.__init__(self, master, **kwargs)
+        self.bind('<Configure>', lambda e: self.config(wraplength=master.winfo_width()))
+        
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
         tk.Frame.__init__(self, master)
@@ -40,7 +54,7 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
         MainWin.checkboxList[self.number] = [name, self.checkedStatus.get()]
         MainWin.checkboxNumber += 1
         
-        checkbox = tk.Checkbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
+        checkbox = WrappingCheckbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
         checkbox.pack(side=tk.LEFT)
 
         deleteItem = tk.Button(self, text="x", bg="red", fg="white",
@@ -77,7 +91,7 @@ class InputStuff(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
 
-        prompt = tk.Label(self, text="What do you want your checkbox to be for?")
+        prompt = WrappingLabel(self, text="What do you want your checkbox to be for?")
         prompt.pack()
 
         bottomInput = tk.Frame(self)
