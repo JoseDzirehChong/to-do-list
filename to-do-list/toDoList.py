@@ -29,7 +29,6 @@ class WrappingCheckbutton(tk.Checkbutton):
     def __init__(self, master=None, **kwargs):
         tk.Checkbutton.__init__(self, master, **kwargs)
         self.bind('<Configure>', lambda e: self.config(wraplength=master.winfo_width()-65))
-        print(self.winfo_width())
 
 #credit to /u/novel_yet_trivial for this class
 class WrappingLabel(tk.Label):
@@ -101,13 +100,24 @@ class InputStuff(tk.Frame):
         buttonConfirm.pack(side=tk.LEFT)
         bottomInput.pack()
 
-        buttonDone = tk.Button(self, text = "Close Input", command=master.hideInputStuff)
+        buttonDone = tk.Button(self, text = "Close Input", command=master.master.hideInputStuff)
         buttonDone.pack()
 
     def drawCheckbox(self, event=None):
-        self.master.add(self.entry.get())
+        self.master.master.add(self.entry.get())
         self.entry.delete(0, tk.END)
 
+class AddButtonArea(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+    
+        self.addButton = tk.Button(self, text="Add Item", command=master.showInputStuff)
+        self.addButton.pack()
+        
+class SettingsButotnArea(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+    
 class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
@@ -121,9 +131,13 @@ class MainWindow(tk.Frame):
 
         self.checkboxArea = CheckboxArea(self)
         self.checkboxArea.pack(fill=tk.X)
+        
+        self.addButtonArea = AddButtonArea(self)
+        self.addButtonArea.pack()
 
-        self.inputStuff = InputStuff(self)
-        self.addButton = tk.Button(self, text="Add Item", command=self.showInputStuff)
+        self.inputStuff = InputStuff(self.addButtonArea)
+        
+        self.settingsButton = tk.Button(self, text="Settings")
 
         self.hideInputStuff() # start with "add" button active
 
@@ -140,15 +154,16 @@ class MainWindow(tk.Frame):
         self.saveToJSON()
 
     def showInputStuff(self): #hides "add item" button. shows input text, box, and "confirm" button (all in inputStuff). binds "confirm" button to return key for ease of use
-        self.addButton.pack_forget()
+        self.addButtonArea.addButton.pack_forget()
         self.inputStuff.pack()
         self.inputStuff.entry.focus()
         self.master.bind('<Return>', self.inputStuff.drawCheckbox)
 
     def hideInputStuff(self): #hides input text, box, and "confirm" button (all in inputStuff). shows "add item" button. unbinds "confirm" button from the return key since that button is no longer on the screen
         self.inputStuff.pack_forget()
-        self.addButton.pack()
+        self.addButtonArea.addButton.pack()
         self.master.unbind('<Return>')
+        self.settingsButton.pack()
 
     def load(self):
         
