@@ -10,7 +10,7 @@ Created on Sun Jan 22 14:47:36 2017
     #Add scrollbar
     #Possibly add ability to modify and rearrange list items
     #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
-    #Move SettingsWindow somewhere else, right now it's part of MainWindow so it's going to get destroyed.
+    #Flesh out SettingsWin
 
 #greatly improved by https://github.com/novel-yet-trivial
 
@@ -120,10 +120,8 @@ class SettingsButtonArea(tk.Frame):
         self.settingsButton = tk.Button(self, text="Settings", command=self.switchToSettings)
         self.settingsButton.pack()
         
-        self.settingsWindow = SettingsWindow(self)
-        
     def switchToSettings(self):
-        self.settingsWindow.pack()
+        self.master.master.settingsWin.pack()
         self.master.pack_forget()
     
 class MainWindow(tk.Frame):
@@ -204,17 +202,25 @@ class MainWindow(tk.Frame):
         
 class SettingsWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
         self.widthHeightSettings = WidthHeightSettings(self)
+        self.widthHeightSettings.pack()
         
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.widthInput = tk.Entry(self, text = "Input Width (default 400px)")
         self.heightInput = tk.Entry(self, text = "Input Height (default 400px)")
-        
-    def show(self):
         self.widthInput.pack()
         self.heightInput.pack()
+        
+class SuperFrame(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        tk.Frame.__init__(self, master, **kwargs)
+        self.mainWin = MainWindow(self)
+        self.mainWin.pack(fill=tk.X)
+        
+        self.settingsWin = SettingsWindow(self)
         
 def main():
     
@@ -226,12 +232,14 @@ def main():
     master = tk.Tk()
     master.title("To-Do List")
     master.geometry("{}x{}".format(WIDTH, HEIGHT))
-    win = MainWindow(master)
-    win.pack(fill=tk.X)
+    
+    superFrame = SuperFrame(master)
+    superFrame.pack(fill=tk.X)
+    
     master.mainloop()
     
     #saving to JSON at the end of every run of this program for redundancy
-    win.saveToJSON()
+    superFrame.mainWin.saveToJSON()
 
 if __name__ == '__main__':
     main()
