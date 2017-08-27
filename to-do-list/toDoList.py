@@ -206,6 +206,13 @@ class SettingsWindow(tk.Frame):
         self.widthHeightSettings = WidthHeightSettings(self)
         self.widthHeightSettings.pack()
         
+        self.exitSettings = tk.Button(self, text = "Exit Settings", command = self.exitSettings)
+        self.exitSettings.pack()
+        
+    def exitSettings(self):
+        self.master.mainWin.pack(fill=tk.X)
+        self.pack_forget()
+        
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
