@@ -216,10 +216,28 @@ class SettingsWindow(tk.Frame):
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
+        self.title = tk.Label(self, text = "Width & Height")
         self.widthInput = tk.Entry(self, text = "Input Width (default 400px)")
         self.heightInput = tk.Entry(self, text = "Input Height (default 400px)")
+        self.exitWidthHeight = tk.Button(self, text = "Exit Width & Height", command = self.exitWidthHeight)
+        
+        self.showButton = tk.Button(self, text = "Width & Height", command = self.show)
+        self.showButton.pack()
+        
+    def show(self):
+        self.title.pack()
         self.widthInput.pack()
         self.heightInput.pack()
+        self.exitWidthHeight.pack()
+        
+        self.showButton.pack_forget()
+        
+    def exitWidthHeight(self):
+        self.title.pack_forget()
+        self.widthInput.pack_forget()
+        self.heightInput.pack_forget()
+        self.showButton.pack()
+        self.exitWidthHeight.pack_forget()
         
 class SuperFrame(tk.Frame):
     def __init__(self, master=None, **kwargs):
