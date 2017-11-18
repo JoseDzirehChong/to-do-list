@@ -202,16 +202,60 @@ class MainWindow(tk.Frame):
         
 class SettingsWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
+        
+        #define filepaths
+        self.SETTINGS_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
+        self.SETTINGS_FILEPATH = os.path.join(self.SETTINGS_DIR_FILEPATH, "settings.json")
+            
         tk.Frame.__init__(self, master, **kwargs)
+        
         self.widthHeightSettings = WidthHeightSettings(self)
         self.widthHeightSettings.pack()
         
         self.exitSettings = tk.Button(self, text = "Exit Settings", command = self.exitSettings)
         self.exitSettings.pack()
         
+        self.settings = {"height_width": {"height":"400", "width":"400"}}
+        
+        self.load()
+        
     def exitSettings(self):
         self.master.mainWin.pack(fill=tk.X)
         self.pack_forget()
+        
+                
+    def load(self):
+    
+        def createFile(): #check if settings file and its parent directory exist, if not, create them
+            if not os.path.isdir(self.SETTINGS_DIR_FILEPATH):
+                os.makedirs(self.SETTINGS_DIR_FILEPATH, 0o0777)
+
+            if not os.path.isfile(self.SETTINGS_FILEPATH):
+                f = open(self.SETTINGS_FILEPATH, 'w')
+                f.close()
+                os.chmod(self.SETTINGS_FILEPATH, 0o0666)
+                
+        def checkIfSettingsFileIsEmpty():
+            if os.path.getsize(self.SETTINGS_FILEPATH) == 0:
+                self.saveSettings()
+                
+        def loadSettings():
+            try:
+                with open(self.SETTINGS_FILEPATH) as infile:    
+                    settings = json.load(infile)
+                    
+                self.settings = settings
+            except (ValueError, IOError, PermissionError):
+                pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your settings file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your settings file attached (if it doesn't exist just tell me). It can be found at """ + self.SETTINGS_FILEPATH + """.""", 'Broken Settings File')
+
+                
+        createFile()
+        checkIfSettingsFileIsEmpty()
+        loadSettings()
+        
+    def saveSettings(self):
+        with open (self.SETTINGS_FILEPATH, 'w') as outfile:
+            json.dump(self.settings, outfile)
         
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
@@ -231,6 +275,9 @@ class WidthHeightSettings(tk.Frame):
         
         self.showButton = tk.Button(self, text = "Width & Height", command = self.show)
         self.showButton.pack()
+        
+        self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.master.saveSettings)
+        self.saveSettingsButton.pack()
         
     def show(self):
         self.title.pack()
