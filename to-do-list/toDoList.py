@@ -11,6 +11,8 @@ Created on Sun Jan 22 14:47:36 2017
     #Possibly add ability to modify and rearrange list items
     #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
     #Flesh out SettingsWin
+        #Make "Save Settings" button move and work
+        #Make the settings actually changeable (on init of this script, retrieve the settings from the settings file instead of from within script)
 
 #greatly improved by https://github.com/novel-yet-trivial
 
