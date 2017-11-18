@@ -216,9 +216,17 @@ class SettingsWindow(tk.Frame):
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
-        self.title = tk.Label(self, text = "Width & Height")
-        self.widthInput = tk.Entry(self, text = "Input Width (default 400px)")
-        self.heightInput = tk.Entry(self, text = "Input Height (default 400px)")
+        self.title = tk.Label(self, text = "Width & Height", font="Helvetica 14 bold")
+        
+        self.widthInputTitle = tk.Label(self, text = "Enter Width (in pixels)")
+        self.heightInputTitle = tk.Label(self, text = "Enter Height (in pixels)")
+        
+        self.widthInput = tk.Entry(self)
+        self.heightInput = tk.Entry(self)
+        
+        self.widthInput.insert(0, self.master.master.WIDTH)
+        self.heightInput.insert(0, self.master.master.HEIGHT)
+        
         self.exitWidthHeight = tk.Button(self, text = "Exit Width & Height", command = self.exitWidthHeight)
         
         self.showButton = tk.Button(self, text = "Width & Height", command = self.show)
@@ -226,7 +234,9 @@ class WidthHeightSettings(tk.Frame):
         
     def show(self):
         self.title.pack()
+        self.widthInputTitle.pack()
         self.widthInput.pack()
+        self.heightInputTitle.pack()
         self.heightInput.pack()
         self.exitWidthHeight.pack()
         
@@ -234,6 +244,8 @@ class WidthHeightSettings(tk.Frame):
         
     def exitWidthHeight(self):
         self.title.pack_forget()
+        self.widthInputTitle.pack_forget()
+        self.heightInputTitle.pack_forget()
         self.widthInput.pack_forget()
         self.heightInput.pack_forget()
         self.showButton.pack()
@@ -245,20 +257,20 @@ class SuperFrame(tk.Frame):
         self.mainWin = MainWindow(self)
         self.mainWin.pack(fill=tk.X)
         
+        #define width and height to avoid magic numbers
+        self.WIDTH = 400
+        self.HEIGHT = 400
+        
         self.settingsWin = SettingsWindow(self)
         
 def main():
     
-    #define width and height to avoid magic numbers
-    WIDTH = 400
-    HEIGHT = 400
-    
     #basically making the window for this program
     master = tk.Tk()
     master.title("To-Do List")
-    master.geometry("{}x{}".format(WIDTH, HEIGHT))
-    
     superFrame = SuperFrame(master)
+    master.geometry("{}x{}".format(superFrame.WIDTH, superFrame.HEIGHT))
+
     superFrame.pack(fill=tk.X)
     
     master.mainloop()
