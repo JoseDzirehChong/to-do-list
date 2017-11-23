@@ -11,8 +11,6 @@ Created on Sun Jan 22 14:47:36 2017
     #Possibly add ability to modify and rearrange list items
     #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
     #Flesh out SettingsWin
-        #Make "Save Settings" button move and work
-        #Make the settings actually changeable (on init of this script, retrieve the settings from the settings file instead of from within script)
 
 #greatly improved by https://github.com/novel-yet-trivial
 
@@ -123,7 +121,7 @@ class SettingsButtonArea(tk.Frame):
         self.settingsButton.pack()
         
     def switchToSettings(self):
-        self.master.master.settingsWin.pack()
+        self.master.master.settingsWin.pack(fill=tk.BOTH)
         self.master.pack_forget()
     
 class MainWindow(tk.Frame):
@@ -217,6 +215,9 @@ class SettingsWindow(tk.Frame):
         self.exitSettings = tk.Button(self, text = "Exit Settings", command = self.exitSettings)
         self.exitSettings.pack()
         
+        self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.saveSettings)
+        self.saveSettingsButton.pack(side=tk.BOTTOM)
+        
         self.settings = {"height_width": {"height":"400", "width":"400"}}
         
         self.load()
@@ -258,6 +259,7 @@ class SettingsWindow(tk.Frame):
     def saveSettings(self):
         with open (self.SETTINGS_FILEPATH, 'w') as outfile:
             json.dump(self.settings, outfile)
+        print(self.settings)
         
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
@@ -277,9 +279,6 @@ class WidthHeightSettings(tk.Frame):
         
         self.showButton = tk.Button(self, text = "Width & Height", command = self.show)
         self.showButton.pack()
-        
-        self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.master.saveSettings)
-        self.saveSettingsButton.pack()
         
     def show(self):
         self.title.pack()
@@ -320,7 +319,7 @@ def main():
     superFrame = SuperFrame(master)
     master.geometry("{}x{}".format(superFrame.WIDTH, superFrame.HEIGHT))
 
-    superFrame.pack(fill=tk.X)
+    superFrame.pack(fill=tk.BOTH)
     
     master.mainloop()
     
