@@ -121,7 +121,7 @@ class SettingsButtonArea(tk.Frame):
         self.settingsButton.pack()
         
     def switchToSettings(self):
-        self.master.master.settingsWin.pack(fill=tk.BOTH)
+        self.master.master.settingsWin.pack(fill=tk.BOTH, expand=True)
         self.master.pack_forget()
     
 class MainWindow(tk.Frame):
@@ -216,14 +216,14 @@ class SettingsWindow(tk.Frame):
         self.exitSettings.pack()
         
         self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.saveSettings)
-        self.saveSettingsButton.pack(side=tk.BOTTOM)
+        self.saveSettingsButton.pack(side=tk.BOTTOM, pady=15)
         
         self.settings = {"height_width": {"height":"400", "width":"400"}}
         
         self.load()
         
     def exitSettings(self):
-        self.master.mainWin.pack(fill=tk.X)
+        self.master.mainWin.pack(fill=tk.BOTH, expand=True)
         self.pack_forget()
         
                 
@@ -303,7 +303,7 @@ class SuperFrame(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.mainWin = MainWindow(self)
-        self.mainWin.pack(fill=tk.X)
+        self.mainWin.pack(fill=tk.BOTH, expand=True)
         
         #define width and height to avoid magic numbers
         self.WIDTH = 400
@@ -319,7 +319,7 @@ def main():
     superFrame = SuperFrame(master)
     master.geometry("{}x{}".format(superFrame.WIDTH, superFrame.HEIGHT))
 
-    superFrame.pack(fill=tk.BOTH)
+    superFrame.pack(fill=tk.BOTH, expand=True)
     
     master.mainloop()
     
