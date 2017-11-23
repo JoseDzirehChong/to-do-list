@@ -10,7 +10,15 @@ Created on Sun Jan 22 14:47:36 2017
     #Add scrollbar
     #Possibly add ability to modify and rearrange list items
     #Option for cloud or local JSON backup in case of file corruption (perhaps user could initiate it, it could be automated, or both)
+    #Bind "Return" to entering a new checkbox
+    #Provide warning when deleting a large checkbox
+        #Possibly with a "don't show me this again"
     #Flesh out SettingsWin
+        #Make width and height settings work
+        #Add new settings?
+        #Update feature section on README
+        #Make a new Release
+        #Enforce minimum default size for the window to make sure you can't obscure any text (should apply to manually resizing too)
 
 #greatly improved by https://github.com/novel-yet-trivial
 
