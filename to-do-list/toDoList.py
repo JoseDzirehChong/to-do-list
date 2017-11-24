@@ -15,11 +15,15 @@ Created on Sun Jan 22 14:47:36 2017
         #Possibly with a "don't show me this again"
     #Flesh out SettingsWin
         #Make width and height settings work
+            #width and height limit: 220x200 (should apply to manually resizing too)
+            #fix text wrap which somehow broke itself
+                #when compressing window and then  it back out, it does not fully snap back
         #Add new settings?
         #Update feature section on README
         #Make a new Release
-        #Enforce minimum default size for the window to make sure you can't obscure any text (should apply to manually resizing too)
-
+    #Make the X button an actual X again
+    #Bind Esc to leaving SettingsWin
+        
 #greatly improved by https://github.com/novel-yet-trivial
 
 #imports
@@ -225,9 +229,9 @@ class SettingsWindow(tk.Frame):
 
         self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.saveSettings)
         self.saveSettingsButton.pack(side=tk.BOTTOM, pady=15)
-
-        self.settings = {"width_height": {"width":"400", "height":"400"}}
-
+        
+        self.settingsDict = self.master.settingsDict
+        
         self.load()
 
     def exitSettings(self):
@@ -253,9 +257,14 @@ class SettingsWindow(tk.Frame):
         def loadSettings():
             try:
                 with open(self.SETTINGS_FILEPATH) as infile:
-                    settings = json.load(infile)
+                    settingsDict = json.load(infile)
 
-                self.settings = settings
+                self.settingsDict = settingsDict
+                
+                print(str(self.settingsDict) + " load")
+                
+                self.master.settingsDict = self.settingsDict
+                
             except (ValueError, IOError, PermissionError):
                 pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your settings file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your settings file attached (if it doesn't exist just tell me). It can be found at """ + self.SETTINGS_FILEPATH + """.""", 'Broken Settings File')
 
@@ -265,13 +274,17 @@ class SettingsWindow(tk.Frame):
         loadSettings()
 
     def saveSettings(self):
-        print(self.settings)
-        self.settings["height_width"]["width"] = self.widthHeightSettings.widthInput.get()
-        self.settings["height_width"]["height"] = self.widthHeightSettings.heightInput.get()
+        print(str(self.settingsDict) + "Original")
         
+        self.widthHeightSettings.save()
+        print(str(self.settingsDict) + "lower dict")
+        self.master.settingsDict = self.settingsDict
+        
+        #not the cause of my issues
         with open (self.SETTINGS_FILEPATH, 'w') as outfile:
-            json.dump(self.settings, outfile)
-        print(self.settings)
+            json.dump(self.settingsDict, outfile)
+            
+        print(str(self.settingsDict) + "Updated")
 
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
@@ -283,9 +296,6 @@ class WidthHeightSettings(tk.Frame):
 
         self.widthInput = tk.Entry(self)
         self.heightInput = tk.Entry(self)
-
-        self.widthInput.insert(0, self.master.master.WIDTH)
-        self.heightInput.insert(0, self.master.master.HEIGHT)
 
         self.exitWidthHeight = tk.Button(self, text = "Exit Width & Height", command = self.exitWidthHeight)
 
@@ -310,17 +320,43 @@ class WidthHeightSettings(tk.Frame):
         self.heightInput.pack_forget()
         self.showButton.pack()
         self.exitWidthHeight.pack_forget()
+        
+    def save(self):
+        self.master.settingsDict["width_height"]["width"] = self.widthInput.get()
+        self.master.settingsDict["width_height"]["height"] = self.heightInput.get()
+        self.master.master.WIDTH = self.master.settingsDict["width_height"]["width"]
+        #print(self.master.master.WIDTH + " new width")
+        self.master.master.HEIGHT = self.master.settingsDict["width_height"]["height"]
+        #print(self.master.master.HEIGHT + " new height")
+        
+        self.master.master.master.geometry("{}x{}".format(self.master.master.WIDTH, self.master.master.HEIGHT))
 
 class SuperFrame(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.mainWin = MainWindow(self)
         self.mainWin.pack(fill=tk.BOTH, expand=True)
-        self.settingsWin = SettingsWindow(self)
         
         #define width and height to avoid magic numbers
-        self.WIDTH = 400
-        self.HEIGHT = 400
+        
+        self.settingsDict = {"width_height": {"width":"400", "height":"400"}}
+        
+        #default dimensions if they don't have a settings file
+        self.WIDTH = self.settingsDict["width_height"]["width"]
+        self.HEIGHT = self.settingsDict["width_height"]["height"]
+        
+        self.settingsWin = SettingsWindow(self)
+        
+        self.WIDTH = self.settingsDict["width_height"]["width"]
+        self.HEIGHT = self.settingsDict["width_height"]["height"]
+        
+        print("{}x{}".format(self.WIDTH, self.HEIGHT))
+        
+        #their own custom dimensions
+        self.settingsWin.widthHeightSettings.widthInput.insert(0, self.WIDTH)
+        self.settingsWin.widthHeightSettings.heightInput.insert(0, self.HEIGHT)
+        
+        print(str(self.settingsDict) + "init")
 
 
 def main():
