@@ -23,6 +23,8 @@ Created on Sun Jan 22 14:47:36 2017
         #Make a new Release
     #Make the X button an actual X again
     #Bind Esc to leaving SettingsWin
+    
+#PRIORITY: enforce the width and height minimum
         
 #greatly improved by https://github.com/novel-yet-trivial
 
