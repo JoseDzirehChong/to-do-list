@@ -44,23 +44,23 @@ class WrappingLabel(tk.Label):
     def __init__(self, master=None, **kwargs):
         tk.Label.__init__(self, master, **kwargs)
         self.bind('<Configure>', lambda e: self.config(wraplength=master.winfo_width()))
-        
+
 class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text and delete button
     def __init__(self, master, name, **kwargs):
         tk.Frame.__init__(self, master)
-        
+
         MainWin = self.master.master
-                
+
         self.name = name
-        self.checkedStatus = tk.IntVar()  
+        self.checkedStatus = tk.IntVar()
         self.number = MainWin.checkboxNumber
-        
+
         if kwargs.get("variable") == 1:
                 self.checkedStatus.set(1)
-                
+
         MainWin.checkboxList[self.number] = [name, self.checkedStatus.get()]
         MainWin.checkboxNumber += 1
-        
+
         checkbox = WrappingCheckbutton(self, text=name, variable=self.checkedStatus, command=self.toggleStatus)
         checkbox.pack(side=tk.LEFT)
 
@@ -68,16 +68,16 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
                                 activebackground="white", activeforeground="red",
                                 command=self.destroyCheckbox)
         deleteItem.pack(side=tk.RIGHT)
-        
+
 
     def destroyCheckbox(self): #function to destroy the checkbox and the text and delete button that go with it
         destroyCheckbox_list = self.master.master.checkboxList
-        
+
         destroyCheckbox_list.pop(self.number)
 
         self.destroy()
         self.master.master.saveToJSON()
-        
+
     def toggleStatus(self, event=None):
         MainWin = self.master.master
         toggleStatus_list = MainWin.checkboxList
@@ -86,7 +86,7 @@ class CheckboxRow(tk.Frame): #row the list item is on, includes checkbox, text a
 
         elif toggleStatus_list[self.number][1] == 0:
             toggleStatus_list[self.number][1] = 1
-                 
+
         self.master.master.saveToJSON()
 
 class CheckboxArea(tk.Frame):
@@ -118,50 +118,50 @@ class InputStuff(tk.Frame):
 class AddButtonArea(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
-    
+
         self.addButton = tk.Button(self, text="Add Item", command=master.showInputStuff)
         self.addButton.pack()
-        
+
 class SettingsButtonArea(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.settingsButton = tk.Button(self, text="Settings", command=self.switchToSettings)
         self.settingsButton.pack()
-        
+
     def switchToSettings(self):
         self.master.master.settingsWin.pack(fill=tk.BOTH, expand=True)
         self.master.pack_forget()
-    
+
 class MainWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
-        
+
         #define filepaths
         self.SAVEFILE_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
         self.SAVEFILE_FILEPATH = os.path.join(self.SAVEFILE_DIR_FILEPATH, "toDoListSaveFile.json")
-        
+
         self.checkboxList = {}
         self.checkboxNumber = 0
 
         self.checkboxArea = CheckboxArea(self)
         self.checkboxArea.pack(fill=tk.X)
-        
+
         self.addButtonArea = AddButtonArea(self)
         self.addButtonArea.pack()
-        
+
         self.inputStuff = InputStuff(self.addButtonArea)
-        
+
         self.settingsButtonArea = SettingsButtonArea(self)
         self.settingsButtonArea.pack()
 
         self.hideInputStuff() # start with "add" button active
 
         self.load()
-        
+
     def saveToJSON(self):
         with open (self.SAVEFILE_FILEPATH, 'w') as outfile:
             json.dump(self.checkboxList, outfile)
-            
+
         print(self.checkboxList) #for debugging purposes
 
     def add(self, name, **kwargs):
@@ -180,7 +180,7 @@ class MainWindow(tk.Frame):
         self.master.unbind('<Return>')
 
     def load(self):
-        
+
         def createFile(): #check if savefile and its parent directory exist, if not, create them
             if not os.path.isdir(self.SAVEFILE_DIR_FILEPATH):
                 os.makedirs(self.SAVEFILE_DIR_FILEPATH, 0o0777)
@@ -189,16 +189,16 @@ class MainWindow(tk.Frame):
                 f = open(self.SAVEFILE_FILEPATH, 'w')
                 f.close()
                 os.chmod(self.SAVEFILE_FILEPATH, 0o0666)
-                            
+
         def checkIfSaveFileIsEmpty():
             if os.path.getsize(self.SAVEFILE_FILEPATH) == 0:
                 self.saveToJSON()
-                
+
         def lastStand(): #badly named function, loads list items from JSON when the JSON file exists, if not possible, alerts the user that something's not right
             try:
-                with open(self.SAVEFILE_FILEPATH) as infile:    
+                with open(self.SAVEFILE_FILEPATH) as infile:
                     checkboxList = json.load(infile)
-            
+
                 for key in checkboxList:
                     self.checkboxArea.add(checkboxList[key][0], variable=checkboxList[key][1])
             except (ValueError, IOError, PermissionError):
@@ -207,36 +207,36 @@ class MainWindow(tk.Frame):
         createFile()
         checkIfSaveFileIsEmpty()
         lastStand()
-        
+
 class SettingsWindow(tk.Frame):
     def __init__(self, master=None, **kwargs):
-        
+
         #define filepaths
         self.SETTINGS_DIR_FILEPATH = os.path.expanduser(os.path.join("~", "Documents", "joseDzirehChongToDoList"))
         self.SETTINGS_FILEPATH = os.path.join(self.SETTINGS_DIR_FILEPATH, "settings.json")
-            
+
         tk.Frame.__init__(self, master, **kwargs)
-        
+
         self.widthHeightSettings = WidthHeightSettings(self)
         self.widthHeightSettings.pack()
-        
+
         self.exitSettings = tk.Button(self, text = "Exit Settings", command = self.exitSettings)
         self.exitSettings.pack()
-        
+
         self.saveSettingsButton = tk.Button(self, text = "Save Settings", command = self.saveSettings)
         self.saveSettingsButton.pack(side=tk.BOTTOM, pady=15)
-        
-        self.settings = {"height_width": {"height":"400", "width":"400"}}
-        
+
+        self.settings = {"width_height": {"width":"400", "height":"400"}}
+
         self.load()
-        
+
     def exitSettings(self):
         self.master.mainWin.pack(fill=tk.BOTH, expand=True)
         self.pack_forget()
-        
-                
+
+
     def load(self):
-    
+
         def createFile(): #check if settings file and its parent directory exist, if not, create them
             if not os.path.isdir(self.SETTINGS_DIR_FILEPATH):
                 os.makedirs(self.SETTINGS_DIR_FILEPATH, 0o0777)
@@ -245,49 +245,53 @@ class SettingsWindow(tk.Frame):
                 f = open(self.SETTINGS_FILEPATH, 'w')
                 f.close()
                 os.chmod(self.SETTINGS_FILEPATH, 0o0666)
-                
+
         def checkIfSettingsFileIsEmpty():
             if os.path.getsize(self.SETTINGS_FILEPATH) == 0:
                 self.saveSettings()
-                
+
         def loadSettings():
             try:
-                with open(self.SETTINGS_FILEPATH) as infile:    
+                with open(self.SETTINGS_FILEPATH) as infile:
                     settings = json.load(infile)
-                    
+
                 self.settings = settings
             except (ValueError, IOError, PermissionError):
                 pymsgbox.alert("""You're not supposed to see this message. If you do, something's wrong with your settings file and this program couldn't fix it. Please email me at "josedzirehchong@gmail.com" with a copy of your settings file attached (if it doesn't exist just tell me). It can be found at """ + self.SETTINGS_FILEPATH + """.""", 'Broken Settings File')
 
-                
+
         createFile()
         checkIfSettingsFileIsEmpty()
         loadSettings()
-        
+
     def saveSettings(self):
+        print(self.settings)
+        self.settings["height_width"]["width"] = self.widthHeightSettings.widthInput.get()
+        self.settings["height_width"]["height"] = self.widthHeightSettings.heightInput.get()
+        
         with open (self.SETTINGS_FILEPATH, 'w') as outfile:
             json.dump(self.settings, outfile)
         print(self.settings)
-        
+
 class WidthHeightSettings(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.title = tk.Label(self, text = "Width & Height", font="Helvetica 14 bold")
-        
+
         self.widthInputTitle = tk.Label(self, text = "Enter Width (in pixels)")
         self.heightInputTitle = tk.Label(self, text = "Enter Height (in pixels)")
-        
+
         self.widthInput = tk.Entry(self)
         self.heightInput = tk.Entry(self)
-        
+
         self.widthInput.insert(0, self.master.master.WIDTH)
         self.heightInput.insert(0, self.master.master.HEIGHT)
-        
+
         self.exitWidthHeight = tk.Button(self, text = "Exit Width & Height", command = self.exitWidthHeight)
-        
+
         self.showButton = tk.Button(self, text = "Width & Height", command = self.show)
         self.showButton.pack()
-        
+
     def show(self):
         self.title.pack()
         self.widthInputTitle.pack()
@@ -295,9 +299,9 @@ class WidthHeightSettings(tk.Frame):
         self.heightInputTitle.pack()
         self.heightInput.pack()
         self.exitWidthHeight.pack()
-        
+
         self.showButton.pack_forget()
-        
+
     def exitWidthHeight(self):
         self.title.pack_forget()
         self.widthInputTitle.pack_forget()
@@ -306,21 +310,21 @@ class WidthHeightSettings(tk.Frame):
         self.heightInput.pack_forget()
         self.showButton.pack()
         self.exitWidthHeight.pack_forget()
-        
+
 class SuperFrame(tk.Frame):
     def __init__(self, master=None, **kwargs):
         tk.Frame.__init__(self, master, **kwargs)
         self.mainWin = MainWindow(self)
         self.mainWin.pack(fill=tk.BOTH, expand=True)
+        self.settingsWin = SettingsWindow(self)
         
         #define width and height to avoid magic numbers
         self.WIDTH = 400
         self.HEIGHT = 400
-        
-        self.settingsWin = SettingsWindow(self)
-        
+
+
 def main():
-    
+
     #basically making the window for this program
     master = tk.Tk()
     master.title("To-Do List")
@@ -328,9 +332,9 @@ def main():
     master.geometry("{}x{}".format(superFrame.WIDTH, superFrame.HEIGHT))
 
     superFrame.pack(fill=tk.BOTH, expand=True)
-    
+
     master.mainloop()
-    
+
     #saving to JSON at the end of every run of this program for redundancy
     superFrame.mainWin.saveToJSON()
 
